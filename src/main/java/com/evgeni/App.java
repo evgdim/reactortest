@@ -2,6 +2,9 @@ package com.evgeni;
 
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
+
 /**
  * Hello world!
  *
@@ -9,6 +12,12 @@ import reactor.core.publisher.Flux;
 public class App 
 {
     public static void main( String[] args ){
-        Flux.fromArray(new String[]{"asd", "bbb"}).subscribe(e -> System.out.println(e));
+        buffer();
+    }
+
+    private static void buffer() {
+        Flux.fromArray(new String[]{"aa", "bb", "cc", "dd", "aaa", "bbb", "ccc", "ddd"})
+                .buffer(3)
+                .subscribe(e -> System.out.println(e));
     }
 }
