@@ -23,8 +23,21 @@ public class App
 //        mapVsFlatMap();
 //        flatmapMonoVsMap();
         //subscribers();
-        subscribersMultyTread();
+        //subscribersMultyTread();
+        resumeOnError();
         System.in.read();
+    }
+
+    private static void resumeOnError() {
+        Flux.fromArray(new Integer[]{1, 2, 3, 4 ,5, 6, 0, 7, 8, 9, 0})
+                .flatMap(i -> {
+                    try {
+                        return Flux.just(100 / i);
+                    } catch (Exception e) {
+                        return Flux.empty();
+                    }
+                })
+                .subscribe(e -> System.out.println(e));
     }
 
     private static void buffer() {
