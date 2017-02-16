@@ -1,5 +1,7 @@
 package com.evgeni;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import reactor.core.publisher.BlockingSink;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
@@ -24,8 +26,43 @@ public class App
 //        flatmapMonoVsMap();
         //subscribers();
         //subscribersMultyTread();
-        resumeOnError();
+        //resumeOnError();
+        backpressure();
         System.in.read();
+    }
+
+    private static void backpressure() {
+        Flux<Integer> rangeFlux = Flux.range(1, 10)
+                .map(i -> i * 5);
+
+        Subscriber s = new Subscriber() {
+            private Subscription sub;
+            @Override
+            public void onSubscribe(Subscription subscription) {
+                System.out.println("onSubscribe");
+                this.sub = subscription;
+                subscription.request(1);
+            }
+
+            @Override
+            public void onNext(Object o) {
+                System.out.println("onNext "+ (Integer)o);
+                this.sub.request(5);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                System.out.println("onError");
+            }
+
+            @Override
+            public void onComplete() {
+                System.out.println("onComplete");
+            }
+        };
+
+        rangeFlux.subscribe(s);
+
     }
 
     private static void resumeOnError() {
